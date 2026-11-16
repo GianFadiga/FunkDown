@@ -1,4 +1,8 @@
-# Como publicar uma versão
+# Publicar instaladores (desativado)
+
+Hoje o projeto **não publica binários**: quem quiser usar compila a própria cópia (veja o README). Por isso o workflow de release não está ativo e o atualizador automático do app fica desligado.
+
+Este documento fica como referência para o dia em que isso mudar. Para reativar, copie `docs/release.yml.example` para `.github/workflows/release.yml` e siga os passos abaixo.
 
 ## Uma vez só: chave do atualizador
 

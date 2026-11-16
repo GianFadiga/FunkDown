@@ -12,7 +12,7 @@ Reescrita do YTFunkDown (Python + Tkinter, só MP3 do YouTube) como app desktop 
 | 4 | Login | Cookies do navegador ou arquivo `cookies.txt`. O app nunca recebe senha. |
 | 6 | Sistemas | Windows e Linux. macOS fora (sem assinatura da Apple o app é bloqueado). |
 | 7 | Homelab | Versão web fica para depois. O núcleo já é separado da interface para isso. |
-| 8 | Atualização | yt-dlp se atualiza sozinho ao abrir (no máximo a cada 12 h). App se atualiza pelo GitHub Releases. |
+| 8 | Atualização | yt-dlp se atualiza sozinho ao abrir (no máximo a cada 12 h). O atualizador do app existe no código, mas fica desligado (ver decisão 20). |
 | 9 | Funções da v2.0 | Fila paralela, progresso e cancelar por item, pasta padrão com subpastas, capa e tags, histórico, qualidade, playlists do YouTube. |
 | 10 | Interface | Svelte 5 + TypeScript + Vite. |
 | 11 | Motor | Baixado na primeira execução dos releases oficiais, com SHA-256 obrigatório. No Linux usa `ffmpeg` e `deno` do sistema se existirem. |
@@ -24,6 +24,7 @@ Reescrita do YTFunkDown (Python + Tkinter, só MP3 do YouTube) como app desktop 
 | 17 | Engenharia | CI em Windows e Linux, testes no núcleo, clippy, `cargo audit`, `npm audit`, Dependabot. Sem testes que dependam de sites reais. |
 | 18 | Visual | Ícone novo (equalizador em forma de seta para baixo), tema claro e escuro seguindo o sistema. |
 | 19 | Privacidade | Zero telemetria. Cookies só lidos pelo yt-dlp no download. Histórico local, com limpar e desligar. |
+| 20 | Distribuição | Sem instaladores publicados: cada pessoa compila a própria cópia (`setup-windows.ps1` no Windows). O workflow de release fica guardado em `docs/release.yml.example`. Decidido em 16/11/2026 para não distribuir binários. |
 
 Um ponto que surgiu na implementação: desde o fim de 2025 o yt-dlp precisa de um runtime JavaScript externo para o YouTube, e o recomendado é o Deno. Por isso o motor tem três peças (yt-dlp, FFmpeg e Deno), todas verificadas por SHA-256.
 
@@ -68,12 +69,13 @@ Tudo da decisão 9, mais:
 
 - 24 testes unitários no núcleo (plataformas, argumentos, progresso, erros, checksums, ajustes, histórico).
 - Fluxo completo no Linux com o app real: instalação do motor com SHA-256, download de áudio e de vídeo, recorte, nomes, tags, capa e histórico, usando um servidor HTTP local como origem.
-- **Não verificado nesta entrega:** execução no Windows e downloads reais de YouTube, Instagram, TikTok e Facebook. O primeiro teste no Windows deve cobrir a instalação do motor, um link de cada plataforma, cancelamento no meio e login por cookies.
+- Compilação, execução e geração do instalador no Windows confirmadas pelo autor em 15/11/2026.
+- **Não verificado por testes automatizados:** downloads reais de YouTube, Instagram, TikTok e Facebook.
 
 ## Próximos passos
 
-1. **Teste no Windows** e ajustes do que aparecer.
-2. **Chave do atualizador e primeira release** (`docs/RELEASE.md`).
+1. Testar um link de cada plataforma, cancelamento no meio e login por cookies.
+2. Publicar o código no GitHub (sem releases) e o post no LinkedIn.
 3. **Versão web no homelab**: servidor HTTP sobre o `funkdown-core`, a mesma interface Svelte servida pelo navegador, em Docker.
 4. Detecção de link copiado na área de transferência (opcional, desligado por padrão).
 5. Fila persistente entre execuções.

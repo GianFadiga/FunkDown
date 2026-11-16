@@ -21,23 +21,40 @@ FunkDown é a versão 2 do antigo YTFunkDown, reescrita em Rust com [Tauri 2](ht
 - Português e inglês, tema claro e escuro, colar com Ctrl+V em qualquer lugar da janela e arrastar links.
 - Opcional: cortar trechos sem música de clipes com o SponsorBlock.
 
-## Instalação
+## Como usar
 
-Baixe o instalador da [última release](https://github.com/GianFadiga/FunkDown/releases/latest):
+O projeto não publica instaladores prontos: cada pessoa compila a própria cópia a partir do código. Assim você sabe exatamente o que está rodando.
 
-| Sistema | Arquivo |
-| --- | --- |
-| Windows 10/11 | `FunkDown_x.y.z_x64-setup.exe` |
-| Linux (qualquer distro) | `FunkDown_x.y.z_amd64.AppImage` |
-| Debian/Ubuntu | `FunkDown_x.y.z_amd64.deb` |
+### Windows
 
-**Windows e o SmartScreen.** O instalador não tem assinatura de código paga, então o Windows mostra "O Windows protegeu o computador" na primeira vez. Clique em **Mais informações** e depois em **Executar assim mesmo**.
+Baixe ou clone o repositório para uma pasta fora do OneDrive e, no PowerShell, dentro dela:
 
-**Primeira execução.** O app baixa o motor (yt-dlp, FFmpeg e Deno, cerca de 300 MB em disco no Windows) dos releases oficiais no GitHub e confere o SHA-256 de cada arquivo antes de usar. No Linux, se já houver `ffmpeg` e `deno` no sistema, eles são aproveitados.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup-windows.ps1 -SemCopia -Build
+```
+
+O script instala o que faltar (Rust, Node.js, Build Tools do Visual Studio com C++ e WebView2), compila o app e abre a pasta com o instalador, em `target\release\bundle\nsis\`. Execute o instalador e o FunkDown passa a abrir pelo Menu Iniciar. A primeira compilação leva de 10 a 20 minutos.
+
+Sem a opção `-Build`, o script abre o app em modo de desenvolvimento, sem instalar.
+
+### Linux
+
+Instale [Rust](https://rustup.rs), Node.js 22+ e as [dependências do Tauri](https://tauri.app/start/prerequisites/) da sua distribuição. Depois:
+
+```bash
+npm install
+npm run tauri build
+```
+
+O AppImage e o `.deb` saem em `target/release/bundle/`.
+
+### Primeira execução
+
+O app baixa o motor (yt-dlp, FFmpeg e Deno, cerca de 300 MB em disco no Windows) dos releases oficiais de cada projeto no GitHub e confere o SHA-256 de cada arquivo antes de usar. No Linux, se já houver `ffmpeg` e `deno` no sistema, eles são aproveitados.
 
 ## Privacidade
 
-- **Zero telemetria.** O app só se conecta ao site do link que você colou e ao GitHub (motor e atualizações).
+- **Zero telemetria.** O app só se conecta ao site do link que você colou e ao GitHub (para baixar e atualizar o motor).
 - **Nenhuma senha passa pelo app.** Os cookies do navegador são lidos pelo yt-dlp só na hora do download e nunca são copiados nem salvos. Do `cookies.txt`, o app guarda só o caminho.
 - **Histórico e ajustes ficam em arquivos locais.** O histórico pode ser limpo ou desligado nos Ajustes.
 - O SponsorBlock consulta um serviço de terceiros e por isso vem desligado.
@@ -87,7 +104,7 @@ crates/funkdown-core/   núcleo em Rust, sem dependência de interface
 src-tauri/              casca Tauri: comandos e eventos
 src/                    interface em Svelte 5 + TypeScript
 docs/SPEC.md            decisões de projeto e próximos passos
-docs/RELEASE.md         como publicar uma versão
+docs/RELEASE.md         referência para publicar instaladores (hoje desativado)
 legacy/                 YTFunkDown v1 (Python + Tkinter)
 ```
 
