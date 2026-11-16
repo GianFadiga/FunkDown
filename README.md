@@ -1,118 +1,102 @@
-# 🎵 YTFunkDown
+# FunkDown
 
-YTFunkDown é uma aplicação simples que permite baixar vídeos do YouTube em formato MP3 com uma interface gráfica amigável. Ideal para quem quer suas músicas favoritas no computador, rápido e sem complicações.
-A ferramenta por si só permite o donwload, mas a relação de direitos autoriais dos autores deve ser levada em consideração.
+Baixe músicas e vídeos do YouTube, Instagram, TikTok, Facebook e de qualquer outro site que o [yt-dlp](https://github.com/yt-dlp/yt-dlp) suporte. Cole o link e o app decide sozinho: áudio no YouTube, vídeo nas redes sociais.
 
----
+![Tela principal do FunkDown](docs/screenshot.png)
 
-## 📋 Requisitos
+FunkDown é a versão 2 do antigo YTFunkDown, reescrita em Rust com [Tauri 2](https://tauri.app) e Svelte 5. O app original em Python continua em [`legacy/`](legacy/).
 
-Para rodar o **YTFunkDown**, você vai precisar do seguinte:
+> Baixe apenas conteúdo que você tem o direito de baixar. Respeite os direitos autorais e os termos de uso de cada plataforma.
 
-- 🐍 **Python** 3.8 ou superior  
-- 🎬 **FFmpeg** (necessário para conversão dos vídeos em áudio)
+## O que ele faz
 
-> ⚠️ O `ffmpeg.exe` **precisa** estar em um caminho específico para o programa funcionar corretamente.
+- **Fila de downloads** com vários links de uma vez, até 5 simultâneos, progresso, cancelar e tentar de novo por item.
+- **Áudio ou vídeo**: MP3 ou M4A (128, 192 ou 320 kbps) e MP4 até a qualidade máxima. Até 1080p o app prefere H.264 + AAC, que abre em qualquer celular e no WhatsApp.
+- **Nomes e tags limpos**: `Artista - Título.mp3` com acentos, capa quadrada e tags de artista e título gravadas no arquivo.
+- **Playlists do YouTube** em subpasta própria, numeradas, com limite configurável.
+- **Recorte de trecho**: baixe só de `0:30` a `1:15`, por exemplo.
+- **Login sem senha**: para conteúdo que exige conta, o yt-dlp lê os cookies de um navegador onde você já está logado, ou de um arquivo `cookies.txt`.
+- **Histórico local** com busca, "abrir", "mostrar na pasta" e "baixar de novo".
+- **Erros que explicam o problema** (precisa de login, conteúdo privado, limite de requisições) em vez do erro cru.
+- Português e inglês, tema claro e escuro, colar com Ctrl+V em qualquer lugar da janela e arrastar links.
+- Opcional: cortar trechos sem música de clipes com o SponsorBlock.
 
-### 📁 Estrutura Esperada do Projeto
+## Instalação
 
-```
-seu_projeto_YTFunkDown/
-├── ytfunkdown.py
-├── requirements.txt
-├── icon.png
-└── ffmpeg/
-    └── bin/
-        └── ffmpeg.exe
-```
+Baixe o instalador da [última release](https://github.com/GianFadiga/FunkDown/releases/latest):
 
-> 🛠️ O YTFunkDown procura o `ffmpeg.exe` especificamente em `ffmpeg/bin/`. Certifique-se de manter essa estrutura.
+| Sistema | Arquivo |
+| --- | --- |
+| Windows 10/11 | `FunkDown_x.y.z_x64-setup.exe` |
+| Linux (qualquer distro) | `FunkDown_x.y.z_amd64.AppImage` |
+| Debian/Ubuntu | `FunkDown_x.y.z_amd64.deb` |
 
-Você pode baixar o FFmpeg aqui: [ffmpeg.org/download.html](https://ffmpeg.org/download.html)
-Entre na aba de windows e baixe o exe, ele terá toda a estrutura necessária conforme mostrado aqui.
+**Windows e o SmartScreen.** O instalador não tem assinatura de código paga, então o Windows mostra "O Windows protegeu o computador" na primeira vez. Clique em **Mais informações** e depois em **Executar assim mesmo**.
 
----
+**Primeira execução.** O app baixa o motor (yt-dlp, FFmpeg e Deno, cerca de 300 MB em disco no Windows) dos releases oficiais no GitHub e confere o SHA-256 de cada arquivo antes de usar. No Linux, se já houver `ffmpeg` e `deno` no sistema, eles são aproveitados.
 
-## 🚀 Como Instalar e Executar
+## Privacidade
 
-### 1️⃣ Clonar o Repositório
+- **Zero telemetria.** O app só se conecta ao site do link que você colou e ao GitHub (motor e atualizações).
+- **Nenhuma senha passa pelo app.** Os cookies do navegador são lidos pelo yt-dlp só na hora do download e nunca são copiados nem salvos. Do `cookies.txt`, o app guarda só o caminho.
+- **Histórico e ajustes ficam em arquivos locais.** O histórico pode ser limpo ou desligado nos Ajustes.
+- O SponsorBlock consulta um serviço de terceiros e por isso vem desligado.
 
-```bash
-git clone https://github.com/GianFadiga/YTFunkDown.git
-cd YTFunkDown
-```
+## Segurança
 
----
+- yt-dlp, FFmpeg e Deno são verificados por SHA-256 contra o checksum publicado em cada release.
+- O link é validado (só `http`/`https`) e passado ao yt-dlp depois de `--`, sem shell, então nunca é lido como opção.
+- A interface não tem acesso direto a arquivos: abrir e mostrar downloads passa por comandos Rust que só aceitam o id de um download feito pelo próprio app.
+- CSP restrita, permissões mínimas do Tauri, `cargo audit`, `npm audit` e Dependabot no CI.
 
-### 2️⃣ Criar e Ativar um Ambiente Virtual (Recomendado)
+## Desenvolvimento
 
-```bash
-# Criar o ambiente virtual
-python -m venv venv
-
-# Ativar o ambiente virtual
-# No Windows:
-.\venv\Scripts\activate
-
-# No macOS/Linux:
-source venv/bin/activate
-```
-
----
-
-### 3️⃣ Instalar as Dependências
-
-Com o ambiente virtual ativado, instale as bibliotecas:
+Pré-requisitos: [Rust](https://rustup.rs), Node.js 22+ e as [dependências do Tauri](https://tauri.app/start/prerequisites/) para o seu sistema.
 
 ```bash
-pip install -r requirements.txt
+npm install
+npm run tauri dev      # app com recarga automática
+npm run tauri build    # instaladores em target/release/bundle/
 ```
 
-Certifique-se de que o arquivo `requirements.txt` contém dependências como `yt-dlp` e `Pillow`.
-
----
-
-### 4️⃣ Executar o Software
-
-#### 🅰️ Opção A: Rodar com Python (modo desenvolvedor)
+Testes e verificações:
 
 ```bash
-python ytfunkdown.py
+cargo test -p funkdown-core                       # núcleo
+cargo clippy --workspace --all-targets -- -D warnings
+npm run check                                     # tipos da interface
 ```
 
-A interface gráfica será aberta automaticamente.
-
----
-
-#### 🅱️ Opção B: Gerar um Executável Standalone
-
-1. Instale o **PyInstaller**:
+O núcleo também roda sem interface, usando o `yt-dlp` e o `ffmpeg` do PATH:
 
 ```bash
-pip install pyinstaller
+cargo run -p funkdown-core --example fdl -- --audio --out musicas "https://..."
 ```
 
-2. Gere o executável:
+### Estrutura
 
-```bash
-pyinstaller --onefile --windowed --add-data "icon.png;." ytfunkdown.py
+```
+crates/funkdown-core/   núcleo em Rust, sem dependência de interface
+  platform.rs           validação de links e detecção de plataforma
+  args.rs               linha de comando do yt-dlp (função pura)
+  progress.rs           leitura do progresso e dos metadados
+  queue.rs              fila, concorrência, cancelamento
+  engine.rs             download verificado do yt-dlp, FFmpeg e Deno
+  error.rs              tradução dos erros do yt-dlp
+  history.rs settings.rs
+src-tauri/              casca Tauri: comandos e eventos
+src/                    interface em Svelte 5 + TypeScript
+docs/SPEC.md            decisões de projeto e próximos passos
+docs/RELEASE.md         como publicar uma versão
+legacy/                 YTFunkDown v1 (Python + Tkinter)
 ```
 
-- O executável será gerado na pasta `dist/`.
-- O `ffmpeg.exe` **deve estar** em `ffmpeg/bin/` no mesmo diretório do `.exe`.
+## Limitações conhecidas
 
----
+- No Windows, Chrome, Edge e Brave bloqueiam a leitura de cookies por outros programas. Para login, use o Firefox ou um `cookies.txt`.
+- O recorte quadrado da capa só acontece quando a miniatura precisa ser convertida (no YouTube, quase sempre). Uma miniatura que já vem em JPG fica no formato original.
+- Perfis inteiros do Instagram e do TikTok não são suportados de propósito: é o caso que mais leva a bloqueio de conta.
 
-### 5️⃣ Desativar o Ambiente Virtual (Opcional)
+## Licença
 
-```bash
-deactivate
-```
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
----
+[MIT](LICENSE). O FunkDown usa o yt-dlp (Unlicense), o FFmpeg (GPL, binário separado) e o Deno (MIT) sem modificá-los.

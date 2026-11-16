@@ -1,0 +1,22 @@
+[package]
+name = "funkdown-core"
+description = "Núcleo do FunkDown: fila de downloads sobre o yt-dlp, sem dependência de interface."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+url = "2"
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+futures-util = "0.3"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-native-roots", "stream"] }
+tokio = { version = "1", features = ["process", "io-util", "sync", "rt", "macros", "time", "fs"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread"] }

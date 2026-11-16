@@ -1,0 +1,16 @@
+[workspace]
+members = ["crates/funkdown-core", "src-tauri"]
+resolver = "2"
+
+[workspace.package]
+version = "2.0.0"
+edition = "2021"
+license = "MIT"
+authors = ["Gianlucca Fadiga Rissato"]
+repository = "https://github.com/GianFadiga/YTFunkDown"
+
+[profile.release]
+lto = true
+opt-level = "s"
+codegen-units = 1
+strip = true

@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissões da janela principal. Arquivos e diálogos passam por comandos Rust próprios, não por permissões abertas.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "notification:default",
+    "updater:default",
+    "process:allow-restart"
+  ]
+}
